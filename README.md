@@ -35,10 +35,24 @@ Extracting the source into build directory with `dpkg-source` command. [dpkg-sou
     $ dpkg-source -x tbb_4.2~20140122-5.dsc
 
 
-Set `-D TBB_USE_GCC_BUILTINS=1 -D__TBB_64BIT_ATOMICS=0` CXXFLAGS in source package
+Set `-D TBB_USE_GCC_BUILTINS=1 -D __TBB_64BIT_ATOMICS=0` CXXFLAGS in source package
 
     $ cd tbb-4.2~20140122
     $ vi debian/rules
+
+
+Set the line 9 with CXXFLAGS from
+
+    CXXFLAGS=$(CPPFLAGS)
+
+To. See [Raspberry pi compilation errors thread](https://software.intel.com/en-us/forums/intel-threading-building-blocks/topic/500680) for explanation.
+
+    CXXFLAGS+=-D TBB_USE_GCC_BUILTINS=1 -D __TBB_64BIT_ATOMICS=0 $(CPPFLAGS)
+
+
+Rebuild package with the following command
+
+    $ dpkg-buildpackage -rfakeroot -uc -b
 
 
 # Grabbing libtbb2 from debian repo obviously doesn't work.
@@ -77,8 +91,6 @@ Run cmake from top-level directory to build configuration files
 
 
     cmake -D CMAKE_BUILD_TYPE=RELEASE -D WITH_OPENEXR=OFF -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -DOPENCV_EXTRA_MODULES_PATH=opencv_contrib/modules -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D INSTALL_PYTHON_EXAMPLES=ON  opencv
-
-For the reasoning behind the use of `-D TBB_USE_GCC_BUILTINS=1 -D TBB_64BIT_ATOMICS=0` see https://software.intel.com/en-us/forums/intel-threading-building-blocks/topic/500680
 
 
 Run make

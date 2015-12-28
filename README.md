@@ -14,6 +14,12 @@ Install libttb2 and libtbb from debian-armhf repository
     # dpkg -i libtbb-dev_4.2~20140122-5_armhf.deb libtbb2_4.2~20140122-5_armhf.deb
 
 
+# Grabbing libtbb2 from debian repo obviously doesn't work.
+
+* Try installing libtbb2 from source package
+* Try installing libtbb from source
+
+
 # Source
 
 Download OpenCV from github
@@ -43,14 +49,40 @@ Checkout `3.0.0` branch for opencv_contrib
 Run cmake from top-level directory to build configuration files
 
 
-    cmake -D CMAKE_BUILD_TYPE=RELEASE -D WITH_OPENEXR=OFF -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -DOPENCV_EXTRA_MODULES_PATH=opencv_contrib/modules -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D INSTALL_PYTHON_EXAMPLES=ON -D CPLUS_FLAGS+=-DTBB_USE_GCC_BUILTINS=1 -D__TBB_64BIT_ATOMICS=0 opencv
+    cmake -D CMAKE_BUILD_TYPE=RELEASE -D WITH_OPENEXR=OFF -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -DOPENCV_EXTRA_MODULES_PATH=opencv_contrib/modules -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D INSTALL_PYTHON_EXAMPLES=ON -D TBB_USE_GCC_BUILTINS=1 -DTBB_64BIT_ATOMICS=0 -D__TBB_64BIT_ATOMICS=0 opencv
 
-For the reasoning behind the use of `-D CPLUS_FLAGS+=-DTBB_USE_GCC_BUILTINS=1 -D__TBB_64BIT_ATOMICS=0` see https://software.intel.com/en-us/forums/intel-threading-building-blocks/topic/500680
+For the reasoning behind the use of `-D TBB_USE_GCC_BUILTINS=1 -D TBB_64BIT_ATOMICS=0` see https://software.intel.com/en-us/forums/intel-threading-building-blocks/topic/500680
 
 
 Run make
 
     make -j 4
+
+
+After several tries make still fails with
+
+    Linking CXX static library ../../lib/libopencv_hal.a
+    [  7%] Built target opencv_hal
+    [  7%] Building CXX object modules/core/CMakeFiles/opencv_core_pch_dephelp.dir/opencv_core_pch_dephelp.cxx.o
+    In file included from /usr/include/tbb/tbb_machine.h:252:0,
+                     from /usr/include/tbb/aligned_space.h:33,
+                     from /usr/include/tbb/tbb.h:43,
+                     from /home/pi/opencv_source/opencv/modules/core/include/opencv2/core/private.hpp:65,
+                     from /home/pi/opencv_source/opencv/modules/core/src/precomp.hpp:54,
+                     from /home/pi/opencv_source/modules/core/opencv_core_pch_dephelp.cxx:1:
+    /usr/include/tbb/machine/gcc_armv7.h:39:2: error: #error compilation requires an ARMv7-a architecture.
+     #error compilation requires an ARMv7-a architecture.
+      ^
+    modules/core/CMakeFiles/opencv_core_pch_dephelp.dir/build.make:64: recipe for target 'modules/core/CMakeFiles/opencv_core_pch_dephelp.dir/opencv_core_pch_dephelp.cxx.o' failed
+    make[2]: *** [modules/core/CMakeFiles/opencv_core_pch_dephelp.dir/opencv_core_pch_dephelp.cxx.o] Error 1
+    CMakeFiles/Makefile2:1744: recipe for target 'modules/core/CMakeFiles/opencv_core_pch_dephelp.dir/all' failed
+    make[1]: *** [modules/core/CMakeFiles/opencv_core_pch_dephelp.dir/all] Error 2
+    Makefile:137: recipe for target 'all' failed
+    make: *** [all] Error 2
+
+Something isn't linking properly when using libtbb2 pulled from Debian.
+
+Try pulling source libtbb2 package and try setting `CXXFLAGS="-DTBB_USE_GCC_BUILTINS=1 -D__TBB_64BIT_ATOMICS=0"`
 
 References
 

@@ -1,0 +1,18 @@
+Package: libtbb-doc
+Source: tbb
+Version: 4.2~20140122-5
+Architecture: all
+Maintainer: Steve Capper <steven.capper@gmail.com>
+Installed-Size: 3729
+Depends: libjs-jquery (>= 1.7.1)
+Recommends: libtbb-dev, tbb-examples
+Section: doc
+Priority: extra
+Homepage: http://threadingbuildingblocks.org/
+Description: parallelism library for C++ - documentation
+ TBB is a library that helps you leverage multi-core processor
+ performance without having to be a threading expert. It represents a
+ higher-level, task-based parallelism that abstracts platform details
+ and threading mechanism for performance and scalability.
+ .
+ This package includes the TBB documentation files.

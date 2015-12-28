@@ -1,0 +1,26 @@
+Description: Make the test suite compile on ppc32
+ where atomics implementation are missing
+ The code simply check ppc32 vs ppc64, the macros are defined on gcc 4.9.1
+Author: Mathieu Malaterre <malat@debian.org>
+Bug: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=63368
+Bug-Debian: http://bugs.debian.org/762656
+
+--- tbb-4.2~20140122.orig/include/tbb/tbb_config.h
++++ tbb-4.2~20140122/include/tbb/tbb_config.h
+@@ -195,7 +195,16 @@
+ /* TODO: change the version back to 4.1.2 once macro __TBB_WORD_SIZE become optional */
+ #if __TBB_GCC_VERSION >= 40306 || __INTEL_COMPILER >= 1200
+     /** built-in atomics available in GCC since 4.1.2 **/
++#if __PPC__ 
++#if __PPC64__ 
+     #define __TBB_GCC_BUILTIN_ATOMICS_PRESENT 1
++#else
++    // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=63368
++    #define __TBB_GCC_BUILTIN_ATOMICS_PRESENT 0
++#endif
++#else
++    #define __TBB_GCC_BUILTIN_ATOMICS_PRESENT 1
++#endif
+ #endif
+ 
+ #if __INTEL_COMPILER >= 1200

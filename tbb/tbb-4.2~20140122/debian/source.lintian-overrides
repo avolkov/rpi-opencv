@@ -1,0 +1,7 @@
+# Override this file as it is neither included in the final package
+# nor used in anyway during the build process
+tbb source: source-is-missing doc/help/searchdata.js
+
+# We do use jquery.js, but not this one. (We symlink to the jquery
+# package and make it a dependency).
+tbb source: source-is-missing doc/html/jquery.js

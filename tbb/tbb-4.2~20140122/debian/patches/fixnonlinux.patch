@@ -1,0 +1,76 @@
+Description: tweak system inspection to build on hurd/kFreeBSD/x32 systems
+Author: Mathieu Malaterre <malat@debian.org>
+
+Index: tbb-4.2~20140122/build/common.inc
+===================================================================
+--- tbb-4.2~20140122.orig/build/common.inc	2014-03-14 16:19:13.078479474 +0000
++++ tbb-4.2~20140122/build/common.inc	2014-03-14 16:19:13.068479439 +0000
+@@ -41,6 +41,14 @@
+   ifeq ($(OS), Linux)
+     export tbb_os=linux
+   endif
++  # hurd-386
++  ifeq ($(OS), GNU)
++    export tbb_os=linux
++  endif
++  # kfreebsd-*
++  ifeq ($(OS), GNU/kFreeBSD)
++    export tbb_os=FreeBSD
++  endif
+   ifeq ($(OS), Darwin)
+     export tbb_os=macos
+   endif
+Index: tbb-4.2~20140122/build/linux.gcc.inc
+===================================================================
+--- tbb-4.2~20140122.orig/build/linux.gcc.inc	2014-03-14 16:19:13.078479474 +0000
++++ tbb-4.2~20140122/build/linux.gcc.inc	2014-03-14 16:20:45.188045860 +0000
+@@ -107,13 +107,18 @@
+     LIB_LINK_FLAGS += -m32
+ endif
+ 
++ifeq (x32,$(arch))
++    CPLUS_FLAGS += -mx32
++    LIB_LINK_FLAGS += -mx32
++endif
++
+ ifeq (bg,$(arch))
+     CPLUS = mpicxx
+     CONLY = mpicc
+ endif
+ 
+ # for some gcc versions on Solaris, -m64 may imply V9, but perhaps not everywhere (TODO: verify)
+-ifeq (sparc,$(arch))
++ifeq (sparc64,$(arch))
+     CPLUS_FLAGS    += -mcpu=v9 -m64
+     LIB_LINK_FLAGS += -mcpu=v9 -m64
+ endif
+Index: tbb-4.2~20140122/build/FreeBSD.inc
+===================================================================
+--- tbb-4.2~20140122.orig/build/FreeBSD.inc	2014-03-14 16:19:13.078479474 +0000
++++ tbb-4.2~20140122/build/FreeBSD.inc	2014-03-14 16:19:13.073479456 +0000
+@@ -25,15 +25,22 @@
+ # the GNU General Public License.
+ 
+ ifndef arch
+-        ifeq ($(shell uname -m),i386)
++        uname_m:=$(shell uname -m)
++        uname_a:=$(shell uname -a)
++        ifeq ($(uname_m),i386)
+                 export arch:=ia32
+         endif
+-        ifeq ($(shell uname -m),ia64)
++        ifeq ($(uname_m),ia64)
+                 export arch:=ia64
+         endif
+-        ifeq ($(shell uname -m),amd64)
++        ifeq ($(uname_m),amd64)
+                 export arch:=intel64
+         endif
++        ifndef arch
++                export arch:=$(uname_m)
++                $(warning "FreeBSD Unknown arch: " $(arch))
++                $(warning "FreeBSD Unknown uname_a: " $(uname_a))
++        endif
+ endif
+ 
+ ifndef runtime

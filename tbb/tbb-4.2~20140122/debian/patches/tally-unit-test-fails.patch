@@ -1,0 +1,64 @@
+Description: tally up passes/fails rather than stop on fail
+Author: Steve Capper <steven.capper@gmail.com>
+
+Index: tbb/build/Makefile.test
+===================================================================
+--- tbb.orig/build/Makefile.test
++++ tbb/build/Makefile.test
+@@ -31,6 +31,7 @@
+ 
+ default: test_tbb_plain test_tbb_openmp test_tbb_cilk test_tbb_old
+ 
++run_cmd = sh ../test_summary.sh
+ tbb_root ?= $(TBBROOT)
+ BUILDING_PHASE=1
+ TEST_RESOURCE = $(TBB.RES)
+Index: tbb/build/test_summary.sh
+===================================================================
+--- /dev/null
++++ tbb/build/test_summary.sh
+@@ -0,0 +1,31 @@
++#!/bin/sh
++
++# Rather than fail on first test, we keep a tally of tests that
++# pass/fail; as some are running unpredictably on some systems.
++
++# We do fail if we can't compile a test.
++
++if [ "$1" = "--dump" ]; then
++    if [ -e "$3/tests.passed" ]; then
++        count=$(wc -l "$3/tests.passed" | awk '{print $1}')
++        echo $count $2 tests passed.
++    fi
++
++    if [ -e "$3/tests.failed" ]; then
++        echo The following $2 tests FAILED!
++        cat "$3/tests.failed"
++    fi
++
++    exit 0
++fi
++
++eval $@
++rc=$?
++
++if [ "$rc" -eq "0" ]; then
++    echo "$@" >> tests.passed
++else
++    echo "$@" >> tests.failed
++fi
++
++exit 0 # always succeed
+Index: tbb/Makefile
+===================================================================
+--- tbb.orig/Makefile
++++ tbb/Makefile
+@@ -53,6 +53,8 @@ test: tbb tbbmalloc $(if $(use_proxy),tb
+ 	$(MAKE) -C "$(work_dir)_debug"  -r -f $(tbb_root)/build/Makefile.test cfg=debug
+ 	$(MAKE) -C "$(work_dir)_release"  -r -f $(tbb_root)/build/Makefile.tbbmalloc cfg=release malloc_test
+ 	$(MAKE) -C "$(work_dir)_release"  -r -f $(tbb_root)/build/Makefile.test cfg=release
++	sh ./build/test_summary.sh --dump DEBUG "$(work_dir)_debug"
++	sh ./build/test_summary.sh --dump RELEASE "$(work_dir)_release"
+ 
+ rml: mkdir
+ 	$(MAKE) -C "$(work_dir)_debug"  -r -f $(tbb_root)/build/Makefile.rml cfg=debug

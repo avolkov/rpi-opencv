@@ -1,0 +1,23 @@
+Description: detect linux x.y versions where x.y.z not found
+Author: Steve Capper <steven.capper@gmail.com>
+
+Index: tbb/src/test/harness.h
+===================================================================
+--- tbb.orig/src/test/harness.h
++++ tbb/src/test/harness.h
+@@ -602,9 +602,13 @@ inline unsigned LinuxKernelVersion()
+         REPORT_FATAL_ERROR("Can't call uname: errno %d\n", errno);
+         exit(1);
+     }
++
+     if (3 != sscanf(utsnameBuf.release, "%u.%u.%u", &digit1, &digit2, &digit3)) {
+-        REPORT_FATAL_ERROR("Unable to parse OS release '%s'\n", utsnameBuf.release);
+-        exit(1);
++	digit3 = 0;
++	if (2 != sscanf(utsnameBuf.release, "%u.%u", &digit1, &digit2)) {
++            REPORT_FATAL_ERROR("Unable to parse OS release '%s'\n", utsnameBuf.release);
++            exit(1);
++        }
+     }
+     return 1000000*digit1+1000*digit2+digit3;
+ }

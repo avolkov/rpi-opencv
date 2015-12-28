@@ -1,0 +1,4 @@
+version=3
+opts=dversionmangle=s/^(\d)(\d)~(\d{8})/$1$2_$3/,uversionmangle=s/(\d)(\d)_(\d{8})/$1.$2~$3/ \
+https://www.threadingbuildingblocks.org/download \
+https://www.threadingbuildingblocks.org/sites/default/files/software_releases/source/tbb([0-9_]+)oss_src\.tgz

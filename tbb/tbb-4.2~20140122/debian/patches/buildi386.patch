@@ -1,0 +1,34 @@
+Description: allow i386 builds on amd64 and set march to match gcc
+Author: Steve Capper <steven.capper@gmail.com>
+
+Index: tbb/build/linux.gcc.inc
+===================================================================
+--- tbb.orig/build/linux.gcc.inc
++++ tbb/build/linux.gcc.inc
+@@ -93,7 +93,11 @@ endif
+ 
+ ifeq (ia32,$(arch))
+     ITT_NOTIFY = -DDO_ITT_NOTIFY
+-    CPLUS_FLAGS += -m32 -march=pentium4 $(ENABLE_RTM)
++    ifeq ($(shell dpkg-architecture -qDEB_HOST_ARCH),i386)
++        CPLUS_FLAGS += -m32 -march=i586 $(ENABLE_RTM)
++    else
++        CPLUS_FLAGS += -m32 -march=pentium4 $(ENABLE_RTM)
++    endif
+     LIB_LINK_FLAGS += -m32
+ endif
+ 
+Index: tbb/build/linux.inc
+===================================================================
+--- tbb.orig/build/linux.inc
++++ tbb/build/linux.inc
+@@ -73,6 +73,9 @@ ifndef arch
+         ifeq ($(deb_host_arch),x32)
+                 export arch:=x32
+         endif
++        ifeq ($(deb_host_arch),i386)
++                export arch:=ia32
++        endif
+         ifndef arch
+                 export arch:=$(uname_m)
+                 $(warning "Unknown arch: " $(arch))

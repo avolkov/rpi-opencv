@@ -1,0 +1,7 @@
+adddebug.patch
+fixnonlinux.patch
+failonbadtests.patch
+buildi386.patch
+linuxreleasedetect.patch
+tally-unit-test-fails.patch
+ppc32_atomics.patch

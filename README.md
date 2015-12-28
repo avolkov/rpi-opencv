@@ -84,6 +84,8 @@ Something isn't linking properly when using libtbb2 pulled from Debian.
 
 Try pulling source libtbb2 package and try setting `CXXFLAGS="-DTBB_USE_GCC_BUILTINS=1 -D__TBB_64BIT_ATOMICS=0"`
 
+See https://www.raspberrypi.org/forums/viewtopic.php?t=98551&p=727515
+
 References
 
 1. [OpenCV 3.1.0-dev: installation in Linux](http://docs.opencv.org/master/d7/d9f/tutorial_linux_install.html#gsc.tab=0)

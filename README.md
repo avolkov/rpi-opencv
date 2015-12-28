@@ -64,13 +64,15 @@ To. See [Raspberry pi compilation errors thread](https://software.intel.com/en-u
 
     CXXFLAGS+=-D TBB_USE_GCC_BUILTINS=1 -D __TBB_64BIT_ATOMICS=0 $(CPPFLAGS)
 
-Remove the following in debian/libtbb-dev/usr/include/tbb/machine/gcc_armv7.h
+Remove the following in `include/tbb/machine/gcc_armv7.h` and `debian/libtbb-dev/usr/include/tbb/machine/gcc_armv7.h`
 
     //TODO: is ARMv7 is the only version ever to support?
     #if !(__ARM_ARCH_7A__)
     #error compilation requires an ARMv7-a architecture.
     #endif
 
+
+As a workaround delete this line in
 
 Rebuild package with the following command
 
@@ -127,6 +129,38 @@ Run cmake from top-level directory to build configuration files
 Run make
 
     make -j 4
+
+
+New error
+
+    [ 36%] Generating opencl_kernels_core.cpp, opencl_kernels_core.hpp
+    Scanning dependencies of target opencv_core
+    [ 36%] [ 36%] [ 36%] Building CXX object modules/core/CMakeFiles/opencv_core.dir/src/datastructs.cpp.o
+    Building CXX object modules/core/CMakeFiles/opencv_core.dir/src/lpsolver.cpp.o
+    Building CXX object modules/core/CMakeFiles/opencv_core.dir/src/gl_core_3_1.cpp.o
+    [ 36%] Built target pch_Generate_opencv_test_stitching
+    [ 36%] Building CXX object modules/core/CMakeFiles/opencv_core.dir/src/parallel.cpp.o
+    /tmp/cc4pp3Ga.s: Assembler messages:
+    /tmp/cc4pp3Ga.s:191: Error: selected processor does not support ARM mode `dmb ish'
+    /tmp/cc4pp3Ga.s:379: Error: selected processor does not support ARM mode `dmb ish'
+    /tmp/cc4pp3Ga.s:404: Error: selected processor does not support ARM mode `dmb ish'
+    /tmp/cc4pp3Ga.s:495: Error: selected processor does not support ARM mode `dmb ish'
+    modules/core/CMakeFiles/opencv_core.dir/build.make:150: recipe for target 'modules/core/CMakeFiles/opencv_core.dir/src/parallel.cpp.o' failed
+    make[2]: *** [modules/core/CMakeFiles/opencv_core.dir/src/parallel.cpp.o] Error 1
+    make[2]: *** Waiting for unfinished jobs....
+    CMakeFiles/Makefile2:1678: recipe for target 'modules/core/CMakeFiles/opencv_core.dir/all' failed
+    make[1]: *** [modules/core/CMakeFiles/opencv_core.dir/all] Error 2
+    Makefile:137: recipe for target 'all' failed
+    make: *** [all] Error 2
+
+Try setting up these parameters: `-march=armv7-a`
+
+    export CFLAGS=-march=armv7-a
+
+Or more params ([taken from raspberry.org](https://www.raspberrypi.org/forums/viewtopic.php?f=54&t=98517))
+
+    -march=armv7-a -mtune=cortex-a7 -mfpu=neon
+
 
 
 References

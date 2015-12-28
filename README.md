@@ -43,7 +43,9 @@ Checkout `3.0.0` branch for opencv_contrib
 Run cmake from top-level directory to build configuration files
 
 
-    cmake -D CMAKE_BUILD_TYPE=RELEASE -D WITH_OPENEXR=OFF -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -DOPENCV_EXTRA_MODULES_PATH=opencv_contrib/modules -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D INSTALL_PYTHON_EXAMPLES=ON opencv
+    cmake -D CMAKE_BUILD_TYPE=RELEASE -D WITH_OPENEXR=OFF -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -DOPENCV_EXTRA_MODULES_PATH=opencv_contrib/modules -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D INSTALL_PYTHON_EXAMPLES=ON -D CPLUS_FLAGS+=-DTBB_USE_GCC_BUILTINS=1 -D__TBB_64BIT_ATOMICS=0 opencv
+
+For the reasoning behind the use of `-D CPLUS_FLAGS+=-DTBB_USE_GCC_BUILTINS=1 -D__TBB_64BIT_ATOMICS=0` see https://software.intel.com/en-us/forums/intel-threading-building-blocks/topic/500680
 
 
 Run make

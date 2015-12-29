@@ -64,15 +64,21 @@ To. See [Raspberry pi compilation errors thread](https://software.intel.com/en-u
 
     CXXFLAGS+=-D TBB_USE_GCC_BUILTINS=1 -D __TBB_64BIT_ATOMICS=0 $(CPPFLAGS)
 
+
+The following shouldn't be removed specify `-march=armv7-a -mtune=cortex-a7 -mfpu=neon` build parameters instead.
+
 Remove the following in `include/tbb/machine/gcc_armv7.h` and `debian/libtbb-dev/usr/include/tbb/machine/gcc_armv7.h`
+
 
     //TODO: is ARMv7 is the only version ever to support?
     #if !(__ARM_ARCH_7A__)
     #error compilation requires an ARMv7-a architecture.
     #endif
 
+Parallel compilation speedup [source](http://askubuntu.com/a/353869/373573)
 
-As a workaround delete this line in
+    export DEB_BUILD_OPTIONS="parallel=4"
+
 
 Rebuild package with the following command
 
@@ -123,7 +129,7 @@ Checkout `3.0.0` branch for opencv_contrib
 Run cmake from top-level directory to build configuration files
 
 
-    cmake -D CMAKE_BUILD_TYPE=RELEASE -D WITH_OPENEXR=OFF -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -DOPENCV_EXTRA_MODULES_PATH=opencv_contrib/modules -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D INSTALL_PYTHON_EXAMPLES=ON -D TBB_USE_GCC_BUILTINS=1 -D __TBB_64BIT_ATOMICS=0 opencv
+    cmake -D CMAKE_BUILD_TYPE=RELEASE -D WITH_OPENEXR=OFF -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -DOPENCV_EXTRA_MODULES_PATH=opencv_contrib/modules -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D INSTALL_PYTHON_EXAMPLES=ON -D TBB_USE_GCC_BUILTINS=1 -D __TBB_64BIT_ATOMICS=0 -march=armv7-a -mtune=cortex-a7 -mfpu=neon opencv
 
 
 Run make

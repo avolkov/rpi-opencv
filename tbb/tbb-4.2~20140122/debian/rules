@@ -5,8 +5,9 @@ export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
 DPKG_EXPORT_BUILDFLAGS = 1
 include /usr/share/dpkg/buildflags.mk
-CFLAGS+=$(CPPFLAGS)
-CXXFLAGS+=-D TBB_USE_GCC_BUILTINS=1 -D __TBB_64BIT_ATOMICS=0 $(CPPFLAGS)
+RPIFLAGS=-march=armv7-a -mtune=cortex-a7 -mfpu=neon
+CFLAGS+=$(RPIFLAGS) $(CPPFLAGS)
+CXXFLAGS+=$(RPIFLAGS) -D TBB_USE_GCC_BUILTINS=1 -D __TBB_64BIT_ATOMICS=0 $(CPPFLAGS)
 
 %:
 	dh $@ --parallel --dbg-package=libtbb2-dbg

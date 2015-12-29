@@ -34,11 +34,6 @@
 #error Do not include this file directly; include tbb_machine.h instead
 #endif
 
-//TODO: is ARMv7 is the only version ever to support?
-#if !(__ARM_ARCH_7A__)
-#error compilation requires an ARMv7-a architecture.
-#endif
-
 #include <sys/param.h>
 #include <unistd.h>
 
@@ -61,7 +56,7 @@
 
 
 #define __TBB_compiler_fence()    __asm__ __volatile__("": : :"memory")
-#define __TBB_full_memory_fence() __asm__ __volatile__("dmb ish": : :"memory")
+#define __TBB_full_memory_fence() 0xffff0fa0
 #define __TBB_control_consistency_helper() __TBB_full_memory_fence()
 #define __TBB_acquire_consistency_helper() __TBB_full_memory_fence()
 #define __TBB_release_consistency_helper() __TBB_full_memory_fence()

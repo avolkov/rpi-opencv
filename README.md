@@ -65,8 +65,6 @@ To. See [Raspberry pi compilation errors thread](https://software.intel.com/en-u
     CXXFLAGS+=-D TBB_USE_GCC_BUILTINS=1 -D __TBB_64BIT_ATOMICS=0 $(CPPFLAGS)
 
 
-The following shouldn't be removed specify `-march=armv7-a -mtune=cortex-a7 -mfpu=neon` build parameters instead.
-
 Remove the following in `include/tbb/machine/gcc_armv7.h` and `debian/libtbb-dev/usr/include/tbb/machine/gcc_armv7.h`
 
 
@@ -75,9 +73,25 @@ Remove the following in `include/tbb/machine/gcc_armv7.h` and `debian/libtbb-dev
     #error compilation requires an ARMv7-a architecture.
     #endif
 
+
+On line 56 of the same file, replace
+
+    #define __TBB_full_memory_fence() __asm__ __volatile__("dmb ish": : :"memo    ry")
+
+With the following:
+
+    #define __TBB_full_memory_fence() 0xffff0fa0
+
+In order to prevent the error `error compilation requires an ARMv7-a architecture.` even though Raspberry Pi 2 runs on armv7-a something is wrong with the compiling option when defining the archtecture.
+
+For more information about workaround see [Compile OpenCV with TBB on Raspberry Pi 2](http://stackoverflow.com/questions/30131032/compile-opencv-with-tbb-on-raspberry-pi-2)
+
 Parallel compilation speedup [source](http://askubuntu.com/a/353869/373573)
 
-    export DEB_BUILD_OPTIONS="parallel=4"
+Use 2 threads instead of 4 (the number of CPUs) because of the high memory usage raspberry pi will run out of physical memory and will use swap significantly slowing down build process.
+
+
+    export DEB_BUILD_OPTIONS="parallel=2"
 
 
 Rebuild package with the following command
@@ -162,6 +176,8 @@ New error
 Try setting up these parameters: `-march=armv7-a`
 
     export CFLAGS=-march=armv7-a
+
+this flag doesn't work see stack overflow answer instead -- http://stackoverflow.com/questions/30131032/compile-opencv-with-tbb-on-raspberry-pi-2
 
 Or more params ([taken from raspberry.org](https://www.raspberrypi.org/forums/viewtopic.php?f=54&t=98517))
 

@@ -184,8 +184,14 @@ Or more params ([taken from raspberry.org](https://www.raspberrypi.org/forums/vi
     -march=armv7-a -mtune=cortex-a7 -mfpu=neon
 
 
+# Verifying that OpenCV was compiled with libtbb support
 
-References
+TODO
+
+http://stackoverflow.com/questions/12457885/check-if-opencv-is-compiled-with-tbb?rq=1
+
+
+# References
 
 1. [OpenCV 3.1.0-dev: installation in Linux](http://docs.opencv.org/master/d7/d9f/tutorial_linux_install.html#gsc.tab=0)
 2. [OpenCV Tutorials: Installation in Linux](http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html#linux-installation)

@@ -1,11 +1,17 @@
 Installing OpenCV on Raspberry Pi 2 B
 ========
 
-# Dependencies
+# System Dependencies
 
 Install apt-get dependencies on raspberry pi
 
     # apt-get install build-essential cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev python-dev python3-dev python-numpy libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev python-numpy python3-numpy
+
+
+
+# libtbb
+
+Intel Threading Building Blocks library provices software developers iwth a solution for enabling parallelism in C++ applications and libraries. OpenCV relies on libtbb2, linking against this library should provide better performance, however libtbbs is not shipped by default in raspbian, so it is is necessary to get libtbb2 and libtbb-dev from debian, make some changes in the source then  build and install, see -- [building libtbb2 packages from jessie source package](libtbb.md)), you can also download and[pre-built binaries](todo), or forgo extra performance and not link OpenCV agains libtbb2 by passing `-D WITH_TBB=OFF` to cmake.
 
 Install libttb2 and libtbb from debian-armhf repository
 
@@ -143,7 +149,7 @@ Checkout `3.0.0` branch for opencv_contrib
 Run cmake from top-level directory to build configuration files
 
 
-    cmake -D CMAKE_BUILD_TYPE=RELEASE -D WITH_OPENEXR=OFF -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -DOPENCV_EXTRA_MODULES_PATH=opencv_contrib/modules -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D INSTALL_PYTHON_EXAMPLES=ON -D TBB_USE_GCC_BUILTINS=1 -D __TBB_64BIT_ATOMICS=0 -march=armv7-a -mtune=cortex-a7 -mfpu=neon opencv
+    cmake -D CMAKE_BUILD_TYPE=RELEASE -D WITH_OPENEXR=OFF -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -DOPENCV_EXTRA_MODULES_PATH=opencv_contrib/modules -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D INSTALL_PYTHON_EXAMPLES=ON -D TBB_USE_GCC_BUILTINS=1 -D __TBB_64BIT_ATOMICS=0 opencv
 
 
 Run make

@@ -17,14 +17,16 @@ The easiest way would be to to download [libtbb2](https://github.com/avolkov/rpi
 
 This way is slightly longer, and I haven't actually tried building OpenCV against the modified header files, but this could work.
 
-1. Download libtbb2 and libtbb-dev from Debian Jessie and install the packages on your local system.
+
+Download libtbb2 and libtbb-dev from Debian Jessie and install the packages on your local system.
+
 
     $ wget http://ftp.us.debian.org/debian/pool/main/t/tbb/libtbb-dev_4.2~20140122-5_armhf.deb
     $ wget http://ftp.us.debian.org/debian/pool/main/t/tbb/libtbb2_4.2~20140122-5_armhf.deb
     # dpkg -i libtbb-dev_4.2~20140122-5_armhf.deb libtbb2_4.2~20140122-5_armhf.deb
 
 
-2. Make the following modification to the file `/usr/include/tbb/machine/gcc_armv7.h`
+Make the following modification to the file `/usr/include/tbb/machine/gcc_armv7.h`
 
 Remove the following lines from the top of `gcc_armv7.h`
 

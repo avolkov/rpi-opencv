@@ -6,8 +6,10 @@ There are several ways of installing libtbb2 on your system
 # Installing custom-compiled binaries
 
 I have already downloaded the source package, modified the sources and build binary packages.
-The easiest way would be to to download libtbb2 and libtbb-dev from [here]() and install them on your local system with this command
+The easiest way would be to to download [libtbb2](https://github.com/avolkov/rpi-opencv/raw/master/deb/libtbb-dev_4.2%7E20140122-5_armhf.deb) and [libtbb-dev](https://github.com/avolkov/rpi-opencv/raw/master/deb/libtbb2_4.2%7E20140122-5_armhf.deb) from [here](https://github.com/avolkov/rpi-opencv/tree/master/deb) and install them on your local system with this command
 
+    $ wget https://github.com/avolkov/rpi-opencv/raw/master/deb/libtbb-dev_4.2%7E20140122-5_armhf.deb
+    # wget https://github.com/avolkov/rpi-opencv/raw/master/deb/libtbb2_4.2%7E20140122-5_armhf.deb
     # dpkg -i libtbb2_4.2~20140122-5_armhf.deb libtbb-dev_4.2~20140122-5_armhf.deb
 
 
@@ -92,8 +94,7 @@ With the following:
 
 In order to prevent the error `error compilation requires an ARMv7-a architecture.` even though Raspberry Pi 2 runs on armv7-a, there's something is wrong with the compiling option when defining the architecture.
 
-For more information about workaround see [Compile OpenCV with TBB on Raspberry Pi 2](http://stackoverflow.com/questions/30131032/compile-opencv-with-tbb-on-raspberry-pi-2)
-
+For more information about the workaround see [Compile OpenCV with TBB on Raspberry Pi 2](http://stackoverflow.com/questions/30131032/compile-opencv-with-tbb-on-raspberry-pi-2)
 
 
 Use 2 threads instead of 4 (the number of CPUs) because of the high memory usage raspberry pi will run out of physical memory and will use swap significantly slowing down build process.

@@ -16,7 +16,7 @@ Intel Threading Building Blocks library provices software developers iwth a solu
 OpenCV relies on libtbb2, linking against this library should provide better performance, however libtbbs is not shipped by default in raspbian, there are several ways of solving this problem
 
 
-Download [custom pre-built packages](todo)
+Download [custom pre-built packages](https://github.com/avolkov/rpi-opencv/raw/master/deb/), [see instructions](libtbb2.md)
 
 Rebuilding libtbb2 source package from Debian Jessie [see instructions](libtbb2.md)
 

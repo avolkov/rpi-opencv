@@ -11,115 +11,21 @@ Install apt-get dependencies on raspberry pi
 
 # libtbb
 
-Intel Threading Building Blocks library provices software developers iwth a solution for enabling parallelism in C++ applications and libraries. OpenCV relies on libtbb2, linking against this library should provide better performance, however libtbbs is not shipped by default in raspbian, so it is is necessary to get libtbb2 and libtbb-dev from debian, make some changes in the source then  build and install, see -- [building libtbb2 packages from jessie source package](libtbb.md)), you can also download and[pre-built binaries](todo), or forgo extra performance and not link OpenCV agains libtbb2 by passing `-D WITH_TBB=OFF` to cmake.
+Intel Threading Building Blocks library provices software developers iwth a solution for enabling parallelism in C++ applications and libraries.
 
-Install libttb2 and libtbb from debian-armhf repository
-
-    $ wget http://ftp.us.debian.org/debian/pool/main/t/tbb/libtbb-dev_4.2~20140122-5_armhf.deb
-    $ wget http://ftp.us.debian.org/debian/pool/main/t/tbb/libtbb2_4.2~20140122-5_armhf.deb
-    # dpkg -i libtbb-dev_4.2~20140122-5_armhf.deb libtbb2_4.2~20140122-5_armhf.deb
-
-Package pages in Debian Jessie
-
-* [libtbb2](https://packages.debian.org/jessie/libtbb2)
-* [libtbb-dev](https://packages.debian.org/jessie/libtbb-dev)
-
-Download tbb source package and rebuild it from source in raspbian
-
-## libtbb2
-
-In order to use OpenCV parallel execution functionality, and avoid the following errors associated with using libtbb2 binary packages from debian armhf library:
-
-    #error compilation requires an ARMv7-a architecture.
-      ^
-    modules/core/CMakeFiles/opencv_core_pch_dephelp.dir/build.make:64: recipe for target 'modules/core/CMakeFiles/opencv_core_pch_dephelp.dir/opencv_core_pch_dephelp.cxx.o' failed
-    make[2]: *** [modules/core/CMakeFiles/opencv_core_pch_dephelp.dir/opencv_core_pch_dephelp.cxx.o] Error 1
-    CMakeFiles/Makefile2:1744: recipe for target 'modules/core/CMakeFiles/opencv_core_pch_dephelp.dir/all' failed
-    make[1]: *** [modules/core/CMakeFiles/opencv_core_pch_dephelp.dir/all] Error 2
-    Makefile:137: recipe for target 'all' failed
-    make: *** [all] Error 2
-
-Build libtbb2 and libtbb-dev packages from source Debian Jessie packages.
+OpenCV relies on libtbb2, linking against this library should provide better performance, however libtbbs is not shipped by default in raspbian, there are several ways of solving this problem
 
 
-Downloading the source
+Download [custom pre-built packages](todo)
 
-    $ mkdir tbb
-    $ cd tbb
-    $ wget http://http.debian.net/debian/pool/main/t/tbb/tbb_4.2~20140122-5.dsc
-    $ wget http://http.debian.net/debian/pool/main/t/tbb/tbb_4.2~20140122.orig.tar.gz
-    $ wget http://http.debian.net/debian/pool/main/t/tbb/tbb_4.2~20140122-5.debian.tar.xz
+Rebuilding libtbb2 source package from Debian Jessie [see instructions](libtbb2.md)
 
 
-Extracting the source into build directory with `dpkg-source` command. [dpkg-source quick reference](http://ftp.debian.org/debian/doc/source-unpack.txt)
-
-    $ dpkg-source -x tbb_4.2~20140122-5.dsc
+Ignore the problem and or forgo extra performance and not link OpenCV agains libtbb2 by passing `-D WITH_TBB=OFF` to cmake.
 
 
-Set `-D TBB_USE_GCC_BUILTINS=1 -D __TBB_64BIT_ATOMICS=0` CXXFLAGS in source package
 
-    $ cd tbb-4.2~20140122
-    $ vi debian/rules
-
-
-Set the line 9 with CXXFLAGS from
-
-    CXXFLAGS=$(CPPFLAGS)
-
-To. See [Raspberry pi compilation errors thread](https://software.intel.com/en-us/forums/intel-threading-building-blocks/topic/500680) for explanation.
-
-    CXXFLAGS+=-D TBB_USE_GCC_BUILTINS=1 -D __TBB_64BIT_ATOMICS=0 $(CPPFLAGS)
-
-
-Remove the following in `include/tbb/machine/gcc_armv7.h` and `debian/libtbb-dev/usr/include/tbb/machine/gcc_armv7.h`
-
-
-    //TODO: is ARMv7 is the only version ever to support?
-    #if !(__ARM_ARCH_7A__)
-    #error compilation requires an ARMv7-a architecture.
-    #endif
-
-
-On line 56 of the same file, replace
-
-    #define __TBB_full_memory_fence() __asm__ __volatile__("dmb ish": : :"memo    ry")
-
-With the following:
-
-    #define __TBB_full_memory_fence() 0xffff0fa0
-
-In order to prevent the error `error compilation requires an ARMv7-a architecture.` even though Raspberry Pi 2 runs on armv7-a something is wrong with the compiling option when defining the archtecture.
-
-For more information about workaround see [Compile OpenCV with TBB on Raspberry Pi 2](http://stackoverflow.com/questions/30131032/compile-opencv-with-tbb-on-raspberry-pi-2)
-
-Parallel compilation speedup [source](http://askubuntu.com/a/353869/373573)
-
-Use 2 threads instead of 4 (the number of CPUs) because of the high memory usage raspberry pi will run out of physical memory and will use swap significantly slowing down build process.
-
-
-    export DEB_BUILD_OPTIONS="parallel=2"
-
-
-Rebuild package with the following command
-
-    $ dpkg-buildpackage -rfakeroot -uc -b
-
-
-Find the built packages in the top-level directory
-
-* libtbb2_4.2~20140122-5_armhf.deb
-* libtbb2-dbg_4.2~20140122-5_armhf.deb
-* libtbb-dev_4.2~20140122-5_armhf.deb
-* libtbb-doc_4.2~20140122-5_all.deb
-* tbb-examples_4.2~20140122-5_armhf.deb
-
-
-Install libtbb2 and libtbb-dev
-
-    # dpkg -i libtbb2_4.2~20140122-5_armhf.deb libtbb-dev_4.2~20140122-5_armhf.deb
-
-
-# Building OpenCV 3.0.0 from source
+# Compile OpenCV 3.0.0 from source
 
 
 Download OpenCV from github
@@ -149,51 +55,23 @@ Checkout `3.0.0` branch for opencv_contrib
 Run cmake from top-level directory to build configuration files
 
 
-    cmake -D CMAKE_BUILD_TYPE=RELEASE -D WITH_OPENEXR=OFF -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -DOPENCV_EXTRA_MODULES_PATH=opencv_contrib/modules -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D INSTALL_PYTHON_EXAMPLES=ON -D TBB_USE_GCC_BUILTINS=1 -D __TBB_64BIT_ATOMICS=0 opencv
+    $ cmake -D CMAKE_BUILD_TYPE=RELEASE -D WITH_OPENEXR=OFF -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -DOPENCV_EXTRA_MODULES_PATH=opencv_contrib/modules -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D INSTALL_PYTHON_EXAMPLES=ON -D TBB_USE_GCC_BUILTINS=1 -D __TBB_64BIT_ATOMICS=0 opencv
 
 
 Run make
 
-    make -j 4
+    $ make -j 4
 
 
-New error
-
-    [ 36%] Generating opencl_kernels_core.cpp, opencl_kernels_core.hpp
-    Scanning dependencies of target opencv_core
-    [ 36%] [ 36%] [ 36%] Building CXX object modules/core/CMakeFiles/opencv_core.dir/src/datastructs.cpp.o
-    Building CXX object modules/core/CMakeFiles/opencv_core.dir/src/lpsolver.cpp.o
-    Building CXX object modules/core/CMakeFiles/opencv_core.dir/src/gl_core_3_1.cpp.o
-    [ 36%] Built target pch_Generate_opencv_test_stitching
-    [ 36%] Building CXX object modules/core/CMakeFiles/opencv_core.dir/src/parallel.cpp.o
-    /tmp/cc4pp3Ga.s: Assembler messages:
-    /tmp/cc4pp3Ga.s:191: Error: selected processor does not support ARM mode `dmb ish'
-    /tmp/cc4pp3Ga.s:379: Error: selected processor does not support ARM mode `dmb ish'
-    /tmp/cc4pp3Ga.s:404: Error: selected processor does not support ARM mode `dmb ish'
-    /tmp/cc4pp3Ga.s:495: Error: selected processor does not support ARM mode `dmb ish'
-    modules/core/CMakeFiles/opencv_core.dir/build.make:150: recipe for target 'modules/core/CMakeFiles/opencv_core.dir/src/parallel.cpp.o' failed
-    make[2]: *** [modules/core/CMakeFiles/opencv_core.dir/src/parallel.cpp.o] Error 1
-    make[2]: *** Waiting for unfinished jobs....
-    CMakeFiles/Makefile2:1678: recipe for target 'modules/core/CMakeFiles/opencv_core.dir/all' failed
-    make[1]: *** [modules/core/CMakeFiles/opencv_core.dir/all] Error 2
-    Makefile:137: recipe for target 'all' failed
-    make: *** [all] Error 2
-
-Try setting up these parameters: `-march=armv7-a`
-
-    export CFLAGS=-march=armv7-a
-
-this flag doesn't work see stack overflow answer instead -- http://stackoverflow.com/questions/30131032/compile-opencv-with-tbb-on-raspberry-pi-2
-
-Or more params ([taken from raspberry.org](https://www.raspberrypi.org/forums/viewtopic.php?f=54&t=98517))
-
-    -march=armv7-a -mtune=cortex-a7 -mfpu=neon
+Install opencv on the system
 
 
-# Verifying that OpenCV was compiled with libtbb support
+    # make install
+
 
 TODO
 
+Verifying that OpenCV was compiled with libtbb support
 http://stackoverflow.com/questions/12457885/check-if-opencv-is-compiled-with-tbb?rq=1
 
 
